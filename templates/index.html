@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediCare | Patient Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header class="topbar">
+        <div class="brand-mark">+</div>
+        <div>
+            <h1>MediCare</h1>
+            <p>Healthcare Management System · Portfolio Demo</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="welcome">
+            <div>
+                <p class="eyebrow">PATIENT ADMINISTRATION</p>
+                <h2>Patient overview</h2>
+                <p class="muted">Register and manage fictional patient records.</p>
+            </div>
+            <div class="stat">
+                <span>Total patients</span>
+                <strong>{{ total_patients }}</strong>
+            </div>
+        </section>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="notice {{ category }}">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <section class="panel">
+            <h3>Add a patient</h3>
+            <form action="{{ url_for('add_patient') }}" method="post" class="patient-form">
+                <label>Full name
+                    <input name="full_name" placeholder="e.g. Ayaan Khan" required maxlength="100">
+                </label>
+                <label>Age
+                    <input name="age" type="number" min="0" max="120" placeholder="e.g. 28" required>
+                </label>
+                <label>Phone
+                    <input name="phone" type="tel" placeholder="e.g. 9000000000" required maxlength="20">
+                </label>
+                <label>Reason for visit
+                    <input name="reason" placeholder="e.g. Routine check-up" required maxlength="200">
+                </label>
+                <button type="submit">Add patient</button>
+            </form>
+        </section>
+
+        <section class="panel">
+            <div class="section-heading">
+                <div>
+                    <h3>Patient records</h3>
+                    <p class="muted">Most recently added records appear first.</p>
+                </div>
+                <span class="count">{{ patients|length }} records</span>
+            </div>
+            {% if patients %}
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>ID</th><th>Patient</th><th>Age</th><th>Phone</th><th>Reason</th><th>Action</th></tr></thead>
+                    <tbody>
+                    {% for patient in patients %}
+                    <tr>
+                        <td>#{{ patient.id }}</td>
+                        <td><strong>{{ patient.full_name }}</strong></td>
+                        <td>{{ patient.age }}</td>
+                        <td>{{ patient.phone }}</td>
+                        <td>{{ patient.reason }}</td>
+                        <td>
+                            <form action="{{ url_for('delete_patient', patient_id=patient.id) }}" method="post" onsubmit="return confirm('Delete this demo record?')">
+                                <button class="delete" type="submit">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+                <div class="empty">
+                    <div class="empty-icon">▤</div>
+                    <strong>No patient records yet</strong>
+                    <p>Add a fictional patient using the form above to see it here.</p>
+                </div>
+            {% endif %}
+        </section>
+
+        <p class="disclaimer">Demo project only. Use fictional data. This application is not designed for real patient information or clinical use.</p>
+    </main>
+</body>
+</html>
